@@ -9,10 +9,12 @@ DATA = birthday
 NAME = anna
 
 CRUD-Funktionen (Restful):
-Create: POST-Request mit Daten, ID im Response
-Read: GET-Request liefert alle Datensätze oder nur einen (ID)
-Update: PUT-Request mit ID führt Update mit allen Daten aus, PATCH-Request mit ID macht Update nur auf gesendeten Daten
-Delete: DELETE-Request mit ID entfernt Datensatz
+
+- [x] Create: POST-Request mit Daten, ID im Response
+- [x] Read: GET-Request liefert alle Datensätze oder nur einen (ID)
+- [ ] Update: PUT-Request mit ID führt Update mit allen Daten aus, 
+- [ ] PATCH-Request mit ID macht Update nur auf gesendeten Daten
+- [ ] Delete: DELETE-Request mit ID entfernt Datensatz
 
 Daten werden am Server in JSON-Dateien gespeichert.
 Beispiel: birthday-anna.json
