@@ -16,42 +16,44 @@ app.listen(port, () => console.log(`Server started on port ${port}`));
 app.get('/json/:data/:name', (request, response) => {
     console.log('GET ' + request.originalUrl);
 
-    jsonDataRepository.getAll(request.params.data, request.params.name, (jsonData) => {
-        if (jsonData == null) {
-            response.status(404);
-            response.send('NOT_FOUND');
-            return;
-        }
-
-        response.send(jsonData);
-    });
+    jsonDataRepository.getAll(request.params.data, request.params.name)
+        .then(data => {
+            response.send(data);
+        }).catch(e => {
+            console.log(e);
+            response.status(500);
+            response.send('ERROR');
+        });
 });
 
 app.get('/json/:data/:name/:id', (request, response) => {
     console.log('GET ' + request.originalUrl);
 
-    jsonDataRepository.getById(request.params.data, request.params.name, request.params.id, (data) => {
-        if (data == null) {
-            response.status(404);
-            response.send('NOT_FOUND');
-            return;
-        }
-
-        response.send(JSON.stringify(data));
-    });
+    jsonDataRepository.getById(request.params.data, request.params.name, request.params.id)
+        .then(data => {
+            if (data == null) {
+                response.status(404);
+                response.send('NOT_FOUND');
+                return;
+            }
+    
+            response.send(JSON.stringify(data.originalContent));
+        }).catch(e => {
+            console.log(e);
+            response.status(500);
+            response.send('ERROR');
+        });
 });
 
 app.post('/json/:data/:name', (request, response) => {
     console.log('POST ' + request.originalUrl);
 
-    jsonDataRepository.create(request.params.data, request.params.name, request.body, (id) => {
-        if (id == null) {
+    jsonDataRepository.create(request.params.data, request.params.name, request.body)
+        .then(id => {
+            response.status(201);
+            response.send(id);
+        }).catch(e => {
             response.status(500);
             response.send('Error');
-            return;
-        }
-
-        response.status(201);
-        response.send(id);
-    });
+        });
 });

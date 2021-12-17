@@ -8,62 +8,75 @@ class JsonDataRepository {
     }
 
     create (data, name, content, doneCallback) {
-        const filePath = this.getFilePath(data, name);
 
-        const newEntry = {
-            id: nanoid(),
-            content: content
-        };
+        return new Promise((resolve, reject) => {
+            const filePath = this.getFilePath(data, name);
 
-        fs.readFile(filePath, (err, data) => {
-            let existingContent;
+            const newEntry = {
+                id: nanoid(),
+                originalContent: content
+            };
 
-            if (err) {
-                existingContent = [];
-            } else {
-                existingContent = JSON.parse(data);
-            }
+            fs.readFile(filePath, (err, data) => {
+                let existingContent;
 
-            existingContent.push(newEntry);
-            fs.writeFile(filePath, JSON.stringify(existingContent, null, 2), (err) => {
                 if (err) {
-                    console.log('Could not save data');
-                    console.log(e);
-                    doneCallback(null);
-                    return;
+                    existingContent = [];
+                } else {
+                    existingContent = JSON.parse(data);
                 }
 
-                doneCallback(newEntry.id);
-            })
+                existingContent.push(newEntry);
+
+                fs.writeFile(filePath, JSON.stringify(existingContent, null, 2), (err) => {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+
+                    resolve(newEntry.id);
+                })
+            });
         });
+
+        
     }
 
-    getAll(data, name, doneCallback) {
-        const filePath = this.getFilePath(data, name);
-        fs.readFile(filePath, (err, data) => {
-            if (err || !data) {
-                doneCallback(null);
-                return;
-            }
+    getAll(data, name) {
+        return new Promise((resolve, reject) => {
+            const filePath = this.getFilePath(data, name);
 
-            doneCallback(JSON.parse(data));
-
-        });
-    }
-
-    getById(data, name, id, doneCallback) {
-        this.getAll(data, name, (data) => {
-            for (let item of data) {
-                if (item.id == id) {
-                    doneCallback(item);
+            fs.readFile(filePath, (err, data) => {
+                if (err) {
+                    reject(err);
                     return;
                 }
-            }
-
-            doneCallback(null);
+                try {
+                    resolve(JSON.parse(data));
+                } catch (e) {
+                    reject(e);
+                }
+            });
         });
     }
 
+    getById(data, name, id) {
+        return new Promise((resolve, reject) => {
+            this.getAll(data, name).then(data => {
+                for (let item of data) {
+                    if (item.id == id) {
+                        resolve(item);
+                        return;
+                    }
+                }
+
+                resolve(null);
+            }).catch(e => {
+                reject(e);
+            });
+        });
+    }
+    
     getFilePath(data, name) {
         const fileName = `${data}-${name}.json`;
         return path.join(this.basePath, fileName);
