@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const {nanoid} = require('nanoid');
-const NotFoundError = require('./NotFoundError');
+const {getElement, getIndexOfElement} = require('./repositoryhelpers');
 
 class JsonDataRepository {
     constructor(basePath) {
@@ -63,7 +63,7 @@ class JsonDataRepository {
     getById(data, name, id) {
         return new Promise((resolve, reject) => {
             this.getJsonFileContent(data, name).then(jsonData => {
-                const item = this.getElement(jsonData, id);
+                const item = getElement(jsonData, id);
                 resolve(item);
             }).catch(e => {
                 reject(e);
@@ -74,7 +74,7 @@ class JsonDataRepository {
     updateFull(data, name, id, content) {
         return new Promise((resolve, reject) => {
             this.getJsonFileContent(data, name).then(jsonData => {
-                let indexOfElement = this.getIndexOfElement(jsonData, id);
+                let indexOfElement = getIndexOfElement(jsonData, id);
 
                 jsonData[indexOfElement].originalContent = content;
                 this.saveJsonData(data, name, jsonData).then(() => resolve()).catch(e => reject(e));
@@ -85,7 +85,7 @@ class JsonDataRepository {
     updatePartial(data, name, id, content) {
         return new Promise((resolve, reject) => {
             this.getJsonFileContent(data, name).then(jsonData => {
-                let indexOfElement = this.getIndexOfElement(jsonData, id);
+                let indexOfElement = getIndexOfElement(jsonData, id);
 
                 jsonData[indexOfElement].originalContent = {...jsonData[indexOfElement].originalContent, ...content};
                 this.saveJsonData(data, name, jsonData).then(() => resolve()).catch(e => reject(e));
@@ -96,7 +96,7 @@ class JsonDataRepository {
     delete(data, name, id) {
         return new Promise((resolve, reject) => {
             this.getJsonFileContent(data, name).then(jsonData => {
-                let indexOfElement = this.getIndexOfElement(jsonData, id);
+                let indexOfElement = getIndexOfElement(jsonData, id);
 
                 jsonData.splice(indexOfElement, 1);
                 this.saveJsonData(data, name, jsonData).then(() => resolve()).catch(e => reject(e));
@@ -140,26 +140,26 @@ class JsonDataRepository {
         });
     }
 
-    getElement(jsonData, id) {
-        const index = this.getIndexOfElement(jsonData, id);
-        return jsonData[index];
-    }
+    // getElement(jsonData, id) {
+    //     const index = this.getIndexOfElement(jsonData, id);
+    //     return jsonData[index];
+    // }
 
-    getIndexOfElement(jsonData, id) {
-        let indexOfElement = -1;
-        for (let i in jsonData) {
-            if (jsonData[i].id == id) {
-                indexOfElement = i;
-                break;
-            }
-        }
+    // getIndexOfElement(jsonData, id) {
+    //     let indexOfElement = -1;
+    //     for (let i in jsonData) {
+    //         if (jsonData[i].id == id) {
+    //             indexOfElement = i;
+    //             break;
+    //         }
+    //     }
 
-        if (indexOfElement == -1) {
-            throw new NotFoundError(id);
-        }
+    //     if (indexOfElement == -1) {
+    //         throw new NotFoundError(id);
+    //     }
 
-        return indexOfElement;
-    }
+    //     return indexOfElement;
+    // }
 }
 
 module.exports = JsonDataRepository;

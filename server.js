@@ -7,18 +7,25 @@ app.use(express.json());
 const path = require('path');
 
 const JsonDataRepository = require('./jsondatarepository');
-const req = require('express/lib/request');
+const CsvDataRepository = require('./csvdatarepository');
 const jsonDataRepository = new JsonDataRepository(path.join('storage', 'json'));
+const csvDataRepository = new CsvDataRepository(path.join('storage', 'csv'));
 
 const port = process.env.PORT || 9001;
 
 app.listen(port, () => console.log(`Server started on port ${port}`));
 
-app.route('/json/:data/:name')
+app.route('/:type/:data/:name')
     .get((request, response) => {
         console.log('GET ' + request.originalUrl);
 
-        jsonDataRepository.getAll(request.params.data, request.params.name)
+        const repository = getRepository(request.params.type);
+        if (repository == null) {
+            returnNotAllowedResponse(response);
+            return;
+        }
+
+        repository.getAll(request.params.data, request.params.name)
             .then(data => {
                 response.send(data);
             }).catch(e => {
@@ -27,7 +34,13 @@ app.route('/json/:data/:name')
 }).post((request, response) => {
     console.log('POST ' + request.originalUrl);
 
-    jsonDataRepository.create(request.params.data, request.params.name, request.body)
+    const repository = getRepository(request.params.type);
+    if (repository == null) {
+        returnNotAllowedResponse(response);
+        return;
+    }
+
+    repository.create(request.params.data, request.params.name, request.body)
         .then(id => {
             endResponse(201, id, response);
         }).catch(e => {
@@ -43,36 +56,71 @@ app.route('/json/:data/:name')
 });
 
 
-app.route('/json/:data/:name/:id')
+app.route('/:type/:data/:name/:id')
     .get((request, response) => {
         console.log('GET ' + request.originalUrl);
 
-        jsonDataRepository.getById(request.params.data, request.params.name, request.params.id)
+        const repository = getRepository(request.params.type);
+        if (repository == null) {
+            returnNotAllowedResponse(response);
+            return;
+        }
+
+        repository.getById(request.params.data, request.params.name, request.params.id)
             .then(data => {
-                response.send(JSON.stringify(data.originalContent));
+                response.send(JSON.stringify(data));
             }).catch(e => {
                 returnErrorResponse(e, response);
             });
 }).put((request, response) => {
     console.log('PUT ' + request.originalUrl);
 
-    jsonDataRepository.updateFull(request.params.data, request.params.name, request.params.id, request.body)
+    const repository = getRepository(request.params.type);
+    if (repository == null) {
+        returnNotAllowedResponse(response);
+        return;
+    }
+
+    repository.updateFull(request.params.data, request.params.name, request.params.id, request.body)
         .then(() => endResponse(202, request.params.id, response))
         .catch(e => returnErrorResponse(e, response));
 }).patch((request, response) => {
     console.log('PATCH ' + request.originalUrl);
 
-    jsonDataRepository.updatePartial(request.params.data, request.params.name, request.params.id, request.body)
+    const repository = getRepository(request.params.type);
+    if (repository == null) {
+        returnNotAllowedResponse(response);
+        return;
+    }
+
+    repository.updatePartial(request.params.data, request.params.name, request.params.id, request.body)
         .then(() => endResponse(202, request.params.id, response))
         .catch(e => returnErrorResponse(e, response));
 
 }).delete((request, response) => {
     console.log('DELETE ' + request.originalUrl);
 
-    jsonDataRepository.delete(request.params.data, request.params.name, request.params.id)
+    const repository = getRepository(request.params.type);
+    if (repository == null) {
+        returnNotAllowedResponse(response);
+        return;
+    }
+    
+    repository.delete(request.params.data, request.params.name, request.params.id)
         .then(() => endResponse(204, 'DELETED', response))
         .catch(e => returnErrorResponse(e, response));
 
 }).all((request, response) => {
     returnNotAllowedResponse(response);
 });
+
+const getRepository = (type) => {
+    switch (type) {
+        case 'json':
+            return jsonDataRepository;
+        case 'csv':
+            return csvDataRepository;
+        default:
+            return null;
+    }
+}
