@@ -1,4 +1,4 @@
-const NotFoundError = require('./NotFoundError');
+const NotFoundError = require('../repositories/NotFoundError');
 
 const returnNotFoundResponse = (response) => {
     endResponse(404, 'NOT_FOUND', response);

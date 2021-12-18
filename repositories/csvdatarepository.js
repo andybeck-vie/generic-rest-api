@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const {nanoid} = require('nanoid');
-const {getElement, getIndexOfElement} = require('./repositoryhelpers');
+const {getElement, getIndexOfElement} = require('../helpers/repositoryhelpers');
 const fastcsv = require('fast-csv');
 
 class CsvDataRepository {

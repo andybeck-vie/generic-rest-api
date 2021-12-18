@@ -1,4 +1,4 @@
-const NotFoundError = require('./NotFoundError');
+const NotFoundError = require('../repositories/NotFoundError');
 
 const getElement = (data, id) => {
     const index = getIndexOfElement(data, id);

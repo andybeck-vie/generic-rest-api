@@ -1,13 +1,13 @@
 const express = require('express');
 const app = express();
-const {returnNotFoundResponse, returnServerErrorResponse, returnErrorResponse, endResponse, returnNotAllowedResponse} = require('./responsehelper');
+const {returnNotFoundResponse, returnServerErrorResponse, returnErrorResponse, endResponse, returnNotAllowedResponse} = require('./helpers/responsehelper');
 
 app.use(express.json());
 
 const path = require('path');
 
-const JsonDataRepository = require('./jsondatarepository');
-const CsvDataRepository = require('./csvdatarepository');
+const JsonDataRepository = require('./repositories/jsondatarepository');
+const CsvDataRepository = require('./repositories/csvdatarepository');
 const jsonDataRepository = new JsonDataRepository(path.join('storage', 'json'));
 const csvDataRepository = new CsvDataRepository(path.join('storage', 'csv'));
 
