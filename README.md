@@ -22,7 +22,7 @@ Beispiel: birthday-anna.json
 - [x] Der Response hat unterschiedliche HTTP-Status-Codes
 - [x] 200 OK (bei GET Requests)
 - [x] 201 Created (neuer Datensatz wurde erzeugt, Antwort enthält zusätzlich ID des Datensatzes)
-- [ ] 202 Accepted (Datensatz wurde geändert, Antwort enthält zusätzlich ID des Datensatzes)
+- [x] 202 Accepted (Datensatz wurde geändert, Antwort enthält zusätzlich ID des Datensatzes)
 - [x] 204 No Content (Datensatz wurde erfolgreich gelöscht)
 - [x] 404 Not found (wenn ein Datensatz mit bestimmter ID nicht gefunden wurde, oder PUT/DELETE ohne id aufgerufen wurde)
 - [x] 405 Method Not Allowed (falsche Methode)
@@ -30,6 +30,6 @@ Beispiel: birthday-anna.json
 
 
 Zusatzaufgabe:
-- Daten sollen am Server in CSV statt in JSON Dateien gespeichert werden, so kann der Kunde sie leichter bearbeiten
-- es soll eine Möglichkeit zum Download der CSV-Datei geben
-- geänderte CSV Daten können wieder upgeloadet werden
+- [ ] Daten sollen am Server in CSV statt in JSON Dateien gespeichert werden, so kann der Kunde sie leichter bearbeiten
+- [ ] es soll eine Möglichkeit zum Download der CSV-Datei geben
+- [] geänderte CSV Daten können wieder upgeloadet werden
