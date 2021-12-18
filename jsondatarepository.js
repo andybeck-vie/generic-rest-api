@@ -62,40 +62,41 @@ class JsonDataRepository {
 
     getById(data, name, id) {
         return new Promise((resolve, reject) => {
-            this.getAll(data, name).then(data => {
-                for (let item of data) {
-                    if (item.id == id) {
-                        resolve(item);
-                        return;
-                    }
-                }
-
-                reject(new NotFoundError(data, name, id));
+            this.getJsonFileContent(data, name).then(jsonData => {
+                const item = this.getElement(jsonData, id);
+                resolve(item);
             }).catch(e => {
                 reject(e);
             });
         });
     }
 
-    update(data, name, id, content) {
+    updateFull(data, name, id, content) {
+        return new Promise((resolve, reject) => {
+            this.getJsonFileContent(data, name).then(jsonData => {
+                let indexOfElement = this.getIndexOfElement(jsonData, id);
 
+                jsonData[indexOfElement].originalContent = content;
+                this.saveJsonData(data, name, jsonData).then(() => resolve()).catch(e => reject(e));
+            }).catch(e => reject(e));
+        });
+    }
+
+    updatePartial(data, name, id, content) {
+        return new Promise((resolve, reject) => {
+            this.getJsonFileContent(data, name).then(jsonData => {
+                let indexOfElement = this.getIndexOfElement(jsonData, id);
+
+                jsonData[indexOfElement].originalContent = {...jsonData[indexOfElement].originalContent, ...content};
+                this.saveJsonData(data, name, jsonData).then(() => resolve()).catch(e => reject(e));
+            }).catch(e => reject(e));
+        })
     }
 
     delete(data, name, id) {
         return new Promise((resolve, reject) => {
             this.getJsonFileContent(data, name).then(jsonData => {
-                let indexOfElement = -1;
-                for (let i in jsonData) {
-                    if (jsonData[i].id == id) {
-                        indexOfElement = i;
-                        break;
-                    }
-                }
-
-                if (indexOfElement == -1) {
-                    reject(new NotFoundError(data, name, id));
-                    return;
-                }
+                let indexOfElement = this.getIndexOfElement(jsonData, id);
 
                 jsonData.splice(indexOfElement, 1);
                 this.saveJsonData(data, name, jsonData).then(() => resolve()).catch(e => reject(e));
@@ -137,6 +138,27 @@ class JsonDataRepository {
                 resolve();
             })
         });
+    }
+
+    getElement(jsonData, id) {
+        const index = this.getIndexOfElement(jsonData, id);
+        return jsonData[index];
+    }
+
+    getIndexOfElement(jsonData, id) {
+        let indexOfElement = -1;
+        for (let i in jsonData) {
+            if (jsonData[i].id == id) {
+                indexOfElement = i;
+                break;
+            }
+        }
+
+        if (indexOfElement == -1) {
+            throw new NotFoundError(id);
+        }
+
+        return indexOfElement;
     }
 }
 

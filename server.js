@@ -7,6 +7,7 @@ app.use(express.json());
 const path = require('path');
 
 const JsonDataRepository = require('./jsondatarepository');
+const req = require('express/lib/request');
 const jsonDataRepository = new JsonDataRepository(path.join('storage', 'json'));
 
 const port = process.env.PORT || 9001;
@@ -53,8 +54,17 @@ app.route('/json/:data/:name/:id')
                 returnErrorResponse(e, response);
             });
 }).put((request, response) => {
+    console.log('PUT ' + request.originalUrl);
 
+    jsonDataRepository.updateFull(request.params.data, request.params.name, request.params.id, request.body)
+        .then(() => endResponse(202, request.params.id, response))
+        .catch(e => returnErrorResponse(e, response));
 }).patch((request, response) => {
+    console.log('PATCH ' + request.originalUrl);
+
+    jsonDataRepository.updatePartial(request.params.data, request.params.name, request.params.id, request.body)
+        .then(() => endResponse(202, request.params.id, response))
+        .catch(e => returnErrorResponse(e, response));
 
 }).delete((request, response) => {
     console.log('DELETE ' + request.originalUrl);

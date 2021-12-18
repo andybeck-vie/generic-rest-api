@@ -1,4 +1,3 @@
-const { response } = require('express');
 const NotFoundError = require('./NotFoundError');
 
 const returnNotFoundResponse = (response) => {
