@@ -1,11 +1,12 @@
 # generic-rest-api
-Prerequisits:
+Prerequisites:
 - nodejs
 - npm
 
 How to start:
 - npm install (Before first start)
 - npm start
+- Server starts on port 9001 per default. Can be overwritten via environment variable PORT
 
 ## API
 ### JSON
