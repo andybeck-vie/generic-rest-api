@@ -102,10 +102,10 @@ class CsvDataRepository {
     readAllData(filePath) {
         return new Promise((resolve, reject) => {
             let content = [];
-
+            
             fs.createReadStream(filePath)
-                .pipe(fastcsv.parse({headers: true}))
                 .on('error', err => reject(err))
+                .pipe(fastcsv.parse({headers: true}))
                 .on('data', row => content.push(row))
                 .on('end', () => resolve(content))
         });
