@@ -1,21 +1,22 @@
 const express = require('express');
-const app = express();
-const {returnNotFoundResponse, returnServerErrorResponse, returnErrorResponse, endResponse, returnNotAllowedResponse} = require('./helpers/responsehelper');
-
-app.use(express.json());
-
+const fs = require('fs');
 const path = require('path');
-
 const JsonDataRepository = require('./repositories/jsondatarepository');
 const CsvDataRepository = require('./repositories/csvdatarepository');
+const {returnNotFoundResponse, returnServerErrorResponse, returnErrorResponse, endResponse, returnNotAllowedResponse} = require('./helpers/responsehelper');
+const req = require('express/lib/request');
+
+const port = process.env.PORT || 9001;
+const app = express();
+app.use(express.static('static'));
+app.use(express.json());
+
 const jsonDataRepository = new JsonDataRepository(path.join('storage', 'json'));
 const csvDataRepository = new CsvDataRepository(path.join('storage', 'csv'));
 
-const port = process.env.PORT || 9001;
-
 app.listen(port, () => console.log(`Server started on port ${port}`));
 
-app.route('/:type/:data/:name')
+app.route('/api/:type/:data/:name')
     .get((request, response) => {
         console.log('GET ' + request.originalUrl);
 
@@ -55,8 +56,7 @@ app.route('/:type/:data/:name')
     returnNotAllowedResponse(response);
 });
 
-
-app.route('/:type/:data/:name/:id')
+app.route('/api/:type/:data/:name/:id')
     .get((request, response) => {
         console.log('GET ' + request.originalUrl);
 
@@ -113,6 +113,27 @@ app.route('/:type/:data/:name/:id')
 }).all((request, response) => {
     returnNotAllowedResponse(response);
 });
+
+app.route('/backend/download/csv/:filename')
+    .get((request, response) => {
+        const filePath = path.join(__dirname, 'storage', 'csv', request.params.filename);
+        response.sendFile(filePath);
+    }).all((request, response) => {
+        returnNotAllowedResponse(response);
+    });
+
+app.route('/backend/csv/file-list')
+    .get((request, response) => {
+        fs.readdir(path.join('storage', 'csv'), (err, files) => {
+            if (err) {
+                returnErrorResponse(err, response);
+                return;
+            }
+
+            response.send(files);
+        })
+    });
+
 
 const getRepository = (type) => {
     switch (type) {

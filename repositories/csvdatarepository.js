@@ -85,6 +85,20 @@ class CsvDataRepository {
         });
     }
 
+    getCsvContent(data, name) {
+        const filePath = this.getFilePath(data, name);
+
+        return new Promise((resolve, reject) => {
+            fs.readFile(filePath, (err, data) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                resolve({fileName: path.parse(filePath).base, content: data});
+            })
+        });
+    }
+
     readAllData(filePath) {
         return new Promise((resolve, reject) => {
             let content = [];
