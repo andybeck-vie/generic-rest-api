@@ -79,7 +79,7 @@ class CsvDataRepository {
             this.readAllData(filePath).then(allData => {
                 let indexOfElement = getIndexOfElement(allData, id);
 
-                âllData.splice(indexOfElement, 1);
+                allData.splice(indexOfElement, 1);
                 this.writeData(data, name, allData).then(() => resolve()).catch(e => reject(e));
             }).catch(e => reject(e));
         });

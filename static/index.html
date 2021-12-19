@@ -7,6 +7,16 @@
         <table id="files">
             <tr></tr>
         </table>
+        <h1>Upload</h1>
+        <form method="POST" action="/backend/csv/upload" enctype="multipart/form-data">
+            <div>
+                <label>Select file</label>
+                <input type="file" name="csv_file"/>
+            </div>
+            <div>
+                <input type="submit" name="btn_submit" value="Send"/>
+            </div>
+        </form>
 
         <span id="err"></span>
         <script>
