@@ -1,4 +1,12 @@
 # generic-rest-api
+Prerequisits:
+- nodejs
+- npm
+
+How to start:
+- npm install (Before first start)
+- npm start
+
 ## API
 ### JSON
 /api/json/{data}/{name}
