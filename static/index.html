@@ -12,7 +12,7 @@
         <script>
             $(document).ready(() => {
                 $.ajax({
-                    url: '/backend/csv/file-list1',
+                    url: '/backend/csv/file-list',
                     type: 'GET'
                 }).done(data => {
                     for (let fileName of data) {

@@ -104,4 +104,5 @@ dist
 .tern-port
 
 # storage files
-storage
+storage/json/*.*
+storage/csv/*.*
